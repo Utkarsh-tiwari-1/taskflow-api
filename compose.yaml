@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: taskflow-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-taskflow}
+      MYSQL_USER: ${DB_USERNAME:-taskflow}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-taskflow}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-local-root-password}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - taskflow-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-local-root-password}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  taskflow-mysql-data:
